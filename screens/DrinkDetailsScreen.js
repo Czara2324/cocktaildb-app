@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { View, ScrollView, StyleSheet, ActivityIndicator, Image, ImageBackground } from 'react-native';
 import { Text, Divider } from '@rneui/themed';
 
 export default function DrinkDetails({ route }) {
@@ -34,30 +34,37 @@ export default function DrinkDetails({ route }) {
   }
 
   return (
+    <ImageBackground
+      source={require('../assets/home-bg.jpg')} 
+      style={{ flex: 1 }}
+      resizeMode='cover'>
     <ScrollView style={styles.container}>
-      <Text h2 style={styles.title}>{cocktail.strDrink}</Text>
+      <Text style={styles.title}>{cocktail.strDrink}</Text>
       <Image source={{ uri: cocktail.strDrinkThumb }} style={styles.image} />
       <Text style={styles.text}>Category: {cocktail.strCategory}</Text>
       <Text style={styles.text}>Type: {cocktail.strAlcoholic}</Text>
       <Text style={styles.text}>Glass: {cocktail.strGlass}</Text>
 
-      <Divider style={{ marginVertical: 10 }} />
-      <Text h4>Ingredients</Text>
+      <Divider style={styles.divider} />
+      <Text style={{fontFamily:'Aladin_400Regular', fontSize: 32}}>Ingredients</Text>
       {ingredients.map((ing, index) => (
         <Text key={index} style={styles.text}>{ing}</Text>
       ))}
 
-      <Divider style={{ marginVertical: 10 }} />
-      <Text h4>Instructions</Text>
+      <Divider style={styles.divider} />
+      <Text style={{fontFamily:'Aladin_400Regular', fontSize: 32}}>Instructions</Text>
       <Text style={styles.text}>{cocktail.strInstructions}</Text>
+    
     </ScrollView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 15 },
+  container: { padding: 20 },
   loading: { flex: 1, justifyContent: 'center' },
-  title: { marginBottom: 10 },
-  image: { width: '100%', height: 250, borderRadius: 10, marginBottom: 15 },
-  text: { fontSize: 16, marginVertical: 2 }
+  title: { fontFamily: 'Aladin_400Regular', fontSize: 40, marginBottom: 10, justifyContent: 'center', textAlign: 'center'},
+  image: { width: '100%', height: 300, borderRadius: 10, marginBottom: 15 },
+  text: { fontFamily: 'Quicksand_700Bold',fontSize: 18, marginVertical: 2 },
+  divider: { marginVertical: 10, borderColor: '#fff3e0', borderWidth: 1 },
 });
