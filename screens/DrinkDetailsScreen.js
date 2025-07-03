@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
+
 import { View, ScrollView, StyleSheet, ActivityIndicator, Image, ImageBackground } from 'react-native';
-import { Text, Divider } from '@rneui/themed';
+import { Text, Divider, Icon } from '@rneui/themed';
+
+import { useFavorites } from '../services/FavoritesContext';
 
 export default function DrinkDetails({ route }) {
   const { id } = route.params;
@@ -33,13 +36,25 @@ export default function DrinkDetails({ route }) {
     }
   }
 
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const isFav = isFavorite(cocktail.idDrink);
+
   return (
     <ImageBackground
       source={require('../assets/home-bg.jpg')} 
       style={{ flex: 1 }}
       resizeMode='cover'>
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>{cocktail.strDrink}</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>{cocktail.strDrink}</Text>
+        <Icon style={styles.icon}
+          name={isFav ? 'heart' : 'heart-outline'}
+          type="ionicon"
+          color={isFav ? '#ff6e40' : '#fff'}
+          size={40}
+          onPress={() => toggleFavorite(cocktail)}
+        />
+      </View>
       <Image source={{ uri: cocktail.strDrinkThumb }} style={styles.image} />
       <Text style={styles.text}>Category: {cocktail.strCategory}</Text>
       <Text style={styles.text}>Type: {cocktail.strAlcoholic}</Text>
@@ -62,9 +77,11 @@ export default function DrinkDetails({ route }) {
 
 const styles = StyleSheet.create({
   container: { padding: 20 },
+  header:{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom:10 },
   loading: { flex: 1, justifyContent: 'center' },
-  title: { fontFamily: 'Aladin_400Regular', fontSize: 40, marginBottom: 10, justifyContent: 'center', textAlign: 'center'},
+  title: { fontFamily: 'Aladin_400Regular', fontSize: 40 },
   image: { width: '100%', height: 300, borderRadius: 10, marginBottom: 15 },
   text: { fontFamily: 'Quicksand_700Bold',fontSize: 18, marginVertical: 2 },
   divider: { marginVertical: 10, borderColor: '#fff3e0', borderWidth: 1 },
+  
 });

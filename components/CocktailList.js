@@ -1,10 +1,12 @@
 import { View, FlatList, ActivityIndicator, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 import { Text,  Card , Image } from '@rneui/themed';
+import { Icon } from '@rneui/themed';
+import  { useFavorites } from '../services/FavoritesContext';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width-60) / 2;
-
 const CocktailList = ({ loading, error, data, navigation }) => {
+  const { toggleFavorite, isFavorite} = useFavorites();
   const renderItem = ({ item }) => (
     <TouchableOpacity
     onPress={() => navigation.navigate('Details', { id: item.idDrink })}>
@@ -15,6 +17,14 @@ const CocktailList = ({ loading, error, data, navigation }) => {
             resizeMode='cover'
           />
           <Text style={styles.title}> {item.strDrink}</Text> 
+          <Icon
+            name={isFavorite(item.idDrink) ? 'heart' : 'heart-outline'}
+            type='ionicon'
+            color={isFavorite(item.idDrink) ? '#CE4257' : '#1c1c1c'}
+            onPress={() => toggleFavorite(item)}
+            size={30}
+            containerStyle={{ position: 'absolute', top: 10, right: 10 }}
+          />
         </Card>
     </TouchableOpacity>
     

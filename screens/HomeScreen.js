@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { SearchBar } from '@rneui/themed';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+
 import CategorySearch from '../components/CategorySearch';
 
 const Tab = createMaterialTopTabNavigator();
+const BottomTab = createBottomTabNavigator();
 
 export default function CategoriesSearch({ navigation }) {
   const [search, setSearch] = useState('');
