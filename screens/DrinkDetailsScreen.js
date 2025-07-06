@@ -10,16 +10,18 @@ export default function DrinkDetails({ route }) {
   const [cocktail, setCocktail] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch(`https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${id}`)
+ useEffect(() => {
+  if (route.params?.cocktail) {
+    setCocktail(route.params.cocktail); // use local drink data
+  } else if (route.params?.id) {
+    fetch(`https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${route.params.id}`)
       .then(res => res.json())
-      .then(data => {
-        setCocktail(data.drinks[0]);
-        setLoading(false);
-      });
-  }, []);
+      .then(data => setCocktail(data.drinks[0]))
+      .catch(console.error);
+  }
+}, []);
 
-  if (loading || !cocktail) {
+  if (!cocktail) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" />
@@ -27,14 +29,13 @@ export default function DrinkDetails({ route }) {
     );
   }
 
-  const ingredients = [];
-  for (let i = 1; i <= 15; i++) {
-    const ingredient = cocktail[`strIngredient${i}`];
-    const measure = cocktail[`strMeasure${i}`];
-    if (ingredient) {
-      ingredients.push(`${measure || ''} ${ingredient}`.trim());
-    }
-  }
+  const ingredients = Array.isArray(cocktail.ingredients)
+  ? cocktail.ingredients
+  : Array.from({ length: 15 }, (_, i) => {
+      const ing = cocktail[`strIngredient${i + 1}`];
+      const measure = cocktail[`strMeasure${i + 1}`];
+      return ing ? `${measure || ''} ${ing}`.trim() : null;
+  }).filter(Boolean);
 
   const { toggleFavorite, isFavorite } = useFavorites();
   const isFav = isFavorite(cocktail.idDrink);
@@ -45,32 +46,39 @@ export default function DrinkDetails({ route }) {
       style={{ flex: 1 }}
       resizeMode='cover'>
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{cocktail.strDrink}</Text>
-        <Icon style={styles.icon}
-          name={isFav ? 'heart' : 'heart-outline'}
-          type="ionicon"
-          color={isFav ? '#ff6e40' : '#fff'}
-          size={40}
-          onPress={() => toggleFavorite(cocktail)}
+        <Image
+          source={
+            cocktail.image
+              ? typeof cocktail.image === 'string'
+                ? { uri: cocktail.image }
+                : cocktail.image
+              : { uri: cocktail.strDrinkThumb }
+          }
+          style={styles.image}
         />
-      </View>
-      <Image source={{ uri: cocktail.strDrinkThumb }} style={styles.image} />
-      <Text style={styles.text}>Category: {cocktail.strCategory}</Text>
-      <Text style={styles.text}>Type: {cocktail.strAlcoholic}</Text>
-      <Text style={styles.text}>Glass: {cocktail.strGlass}</Text>
+      <Text style={styles.title}>{cocktail.name || cocktail.strDrink}</Text>
 
       <Divider style={styles.divider} />
-      <Text style={{fontFamily:'Aladin_400Regular', fontSize: 32}}>Ingredients</Text>
-      {ingredients.map((ing, index) => (
-        <Text key={index} style={styles.text}>{ing}</Text>
+
+      <Text style={styles.text}>Category: {cocktail.category || cocktail.strCategory}</Text>
+      <Text style={styles.text}>Glass: {cocktail.glass || cocktail.strGlass}</Text>
+      <Text style={styles.text}>Type: {cocktail.strAlcoholic || 'Unknown'}</Text>
+
+      <Divider style={styles.divider} />
+
+      <Text h4 style={styles.text}>Ingredients</Text>
+      {ingredients.map((ing, i) => (
+        <Text key={i} style={styles.text}>• {ing}</Text>
       ))}
 
       <Divider style={styles.divider} />
-      <Text style={{fontFamily:'Aladin_400Regular', fontSize: 32}}>Instructions</Text>
-      <Text style={styles.text}>{cocktail.strInstructions}</Text>
-    
+
+      <Text h4 style={styles.text}>Instructions</Text>
+      {(cocktail.instructions || cocktail.strInstructions)?.split('\n').map((line, i) => (
+      <Text key={i} style={styles.text}>{i + 1}. {line}</Text>
+      ))}
     </ScrollView>
+
     </ImageBackground>
   );
 }

@@ -89,7 +89,7 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="Main"
+              name="Home"
               component={MainTabs}
               options={{ 
                 headerStyle: { backgroundColor: '#CE4257' },
