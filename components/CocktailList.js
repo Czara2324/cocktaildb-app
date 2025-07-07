@@ -24,6 +24,9 @@ const CocktailList = ({ loading, error, data, navigation }) => {
             onPress={() => toggleFavorite(item)}
             size={30}
             containerStyle={{ position: 'absolute', top: 10, right: 10 }}
+            backgroundColor={'rgba(255, 255, 255, 0.6)'}
+            borderRadius={50}
+            padding={5}
           />
         </Card>
     </TouchableOpacity>

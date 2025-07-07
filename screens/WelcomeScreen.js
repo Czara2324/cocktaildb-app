@@ -14,7 +14,7 @@ export default function WelcomeScreen({ navigation }) {
                 <Text style={styles.buttonTitle}>D'Bar App</Text>
                 <Button style={styles.button}
                     title="Browse Cocktails"
-                    onPress={() => navigation.navigate('Home')}
+                    onPress={() => navigation.navigate('Tabs')}
                     titleStyle={styles.buttonText}
                     buttonStyle={styles.buttonContainer}
                 />

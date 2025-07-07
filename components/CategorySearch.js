@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, ImageBackground } from 'react-native';
+
 import CocktailList from './CocktailList';
 
 export default function CategorySearch({ category, search, navigation }) {

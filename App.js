@@ -7,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { useFonts } from 'expo-font';
 import { Aladin_400Regular } from '@expo-google-fonts/aladin';
-import { PlayfairDisplay_400Regular, PlayfairDisplay_700Bold } from '@expo-google-fonts/playfair-display';
 import { Quicksand_400Regular, Quicksand_700Bold } from '@expo-google-fonts/quicksand'
 import { FavoritesProvider } from './services/FavoritesContext';
 
@@ -25,7 +24,7 @@ const Tab = createBottomTabNavigator();
     return (
       <Tab.Navigator
         screenOptions={({route}) => ({
-          headerShown: false,
+          headerShown: true,
           tabBarStyle: { backgroundColor: '#CE4257' },
           tabBarActiveTintColor: '#fff',
           tabBarInactiveTintColor: '#fff',
@@ -46,18 +45,18 @@ const Tab = createBottomTabNavigator();
         <Tab.Screen 
           name="Home" 
           component={HomeScreen} 
-          options={{ tabBarLabel: 'Home' }} 
+          options={{ title: 'Home', headerStyle: { backgroundColor: '#CE4257' }, headerTintColor: '#fff', headerTitleStyle: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 24 } }} 
           icon ={{ name: 'home', type: 'ionicon', color: '#fff' }}
         />
         <Tab.Screen 
           name="Favorites" 
           component={FavoritesScreen} 
-          options={{ tabBarLabel: 'Favorites' }} 
+          options={{ title: 'Favorites', headerStyle: { backgroundColor: '#CE4257' }, headerTintColor: '#fff', headerTitleStyle: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 24 }}} 
         />
         <Tab.Screen 
           name="My Drinks" 
           component={MyDrinksScreen} 
-          options={{ tabBarLabel: 'My Drinks' }} 
+          options={{ title: 'My Drinks', headerStyle: { backgroundColor: '#CE4257' }, headerTintColor: '#fff', headerTitleStyle: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 24 } }}
         />
       </Tab.Navigator>
     )
@@ -65,9 +64,7 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   let [fontsLoaded ] = useFonts({
-    Aladin_400Regular, 
-    PlayfairDisplay_400Regular, PlayfairDisplay_700Bold
-    , Quicksand_400Regular, Quicksand_700Bold
+    Aladin_400Regular, Quicksand_400Regular, Quicksand_700Bold
   });
   
   if (!fontsLoaded) {
@@ -89,9 +86,10 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="Home"
+              name="Tabs"
               component={MainTabs}
               options={{ 
+                headerShown: false,
                 headerStyle: { backgroundColor: '#CE4257' },
                 headerTintColor: '#fff',
                 headerTitleStyle: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 24 }
@@ -109,7 +107,11 @@ export default function App() {
             <Stack.Screen 
               name="DrinkForm"
               component={DrinksFormScreen} 
-              options={({ route }) => ({ title: route.params?.drink ? 'Edit Drink' : 'New Drink' })} 
+              options={({ route }) => ({ title:  'New Drink',
+                headerStyle: { backgroundColor: '#CE4257' },
+                headerTintColor: '#fff',
+                headerTitleStyle: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 24 },
+               })} 
             />  
           </Stack.Navigator> 
         </NavigationContainer> 

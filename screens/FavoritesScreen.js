@@ -1,8 +1,11 @@
 import { useState } from 'react';
+
 import { View, StyleSheet, Switch } from 'react-native';
 import { Text } from '@rneui/themed';
-import CocktailList from '../components/CocktailList';
+
 import { useFavorites } from '../services/FavoritesContext';
+
+import CocktailList from '../components/CocktailList';
 
 export default function FavoritesScreen({ navigation }) {
   const { favorites } = useFavorites();
@@ -14,6 +17,9 @@ export default function FavoritesScreen({ navigation }) {
     
   return (
     <View style={styles.container}>
+      {favorites.length === 0 ? (
+      <Text style={styles.emptyText}>No favorite drinks yet. Add some from the Home screen!</Text>
+      ) : (
       <View style={styles.toggleRow}>
         <Text style={styles.label}>Hide Alcoholic Drinks</Text>
         <Switch
@@ -23,6 +29,7 @@ export default function FavoritesScreen({ navigation }) {
           thumbColor={hideAlcoholic ? '#ff6e40' : '#f4f3f4'}
         />
       </View>
+      )}
       <CocktailList data={filteredFavorites} navigation={navigation} />
     </View>
   );
@@ -42,4 +49,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
     color: '#4F000B',
   },
+  emptyText: {
+    textAlign: 'center',
+    alignContent: 'center',
+    fontFamily: 'Quicksand_400Regular',
+    fontSize: 24,
+    color: '#4F000B',
+    marginTop: 20,
+    padding: 20,
+  }
 });
