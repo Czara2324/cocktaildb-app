@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, FlatList, StyleSheet, Alert, ImageBackground } from 'react-native';
 import { ListItem, Icon, Button, Image, Text } from '@rneui/themed';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,25 +10,27 @@ export default function MyDrinksScreen({ navigation }) {
   const [myDrinks, setMyDrinks] = useState([]);
 
 useEffect(() => {
-  const load = async () => {
+  const loadData = async () => {
     try {
       const stored = await AsyncStorage.getItem('myDrinks');
-      if (stored) {
-        setMyDrinks(JSON.parse(stored));
-      } else {
-        // If no saved data, initialize with StaticDrinks
-        await AsyncStorage.setItem('myDrinks', JSON.stringify(StaticDrinks));
-        setMyDrinks(StaticDrinks);
-      }
+      const storedDrinks = stored ? JSON.parse(stored) : [];
+
+      // Filter out static drinks that might already be stored to avoid duplication
+      const merged = [
+        ...StaticDrinks,
+        ...storedDrinks.filter(d => !StaticDrinks.some(s => s.id === d.id))
+      ];
+      setMyDrinks(merged);
     } catch (e) {
       console.error('Error loading drinks:', e);
+      setMyDrinks(StaticDrinks); // Fallback to static drinks only
     }
   };
 
-  const unsubscribe = navigation.addListener('focus', load);
-  load(); // initial load
+  const unsubscribe = navigation.addListener('focus', loadData);
   return unsubscribe;
 }, [navigation]);
+
 
 
   const deleteDrink = async (id) => {
@@ -49,50 +51,51 @@ useEffect(() => {
       },
     ]);
   };
-
   return (
   <View style={styles.container}> 
+  <ImageBackground
+    source={require('../assets/bar.jpeg')}
+    style={{ flex: 1 }}
+    resizeMode='cover'
+    opacity={0.3}
+  >
   <Text style={styles.header}>My Drink Collection</Text>
   
   {myDrinks.length === 0 ? (
-  <Text style={styles.emptyText} key="empty">No drinks saved. Add one to get started!</Text>
+  <Text style={styles.emptyText}>No drinks saved. Add one to get started!</Text>
   ) : (
     <FlatList
       data={myDrinks}
-      keyExtractor={item => item.id.toString()}
+      style={{  margin: 10 }}
       renderItem={({ item }) => (
         <ListItem
-          style={{ backgroundColor: '#fff3e0',  marginBottom: 10 }}
-          key={item.id}
-          bottomDivider
-          onPress={() => navigation.navigate('Details', { cocktail: item })}
+        style={{ padding:5 }}
+           bottomDivider
+           onPress={() => navigation.navigate('Details', { cocktail: item })}
         >
-          {item.image && (
-            <Image
-              key={`image-${item.id}`}
-              source={item.image}
-              style={styles.image}
+            {item.image && (
+              <Image
+                source={item.image}
+                style={styles.image}
             />
           )}
-
           <ListItem.Content style={styles.content}>
-            <ListItem.Title key={"name"} style={styles.content}>{item.name}</ListItem.Title>
-            <ListItem.Subtitle key={"category"} style={styles.text}>{item.category} | {item.glass}</ListItem.Subtitle>
-            <ListItem.Subtitle key={"alcohol-content"} style={styles.text}>{item.strAlcoholic}</ListItem.Subtitle>
+             <ListItem.Title style={styles.content}>{item.name}</ListItem.Title>
+             <ListItem.Subtitle style={styles.text}>{item.category} | {item.glass}</ListItem.Subtitle>
+            <ListItem.Subtitle style={styles.text}>{item.strAlcoholic}</ListItem.Subtitle>
           </ListItem.Content>
           <Icon
             name="delete"
-            key={"icon"}
             onPress={() => deleteDrink(item.id)}
           />
         </ListItem>
+
       )}
       ListFooterComponent={
         <Button
           title="+"
-          key={"add-button"}
           onPress={() => navigation.navigate('DrinkForm')}
-          buttonStyle={{ backgroundColor: '#ffb74d',  borderRadius: 50, alignSelf: 'center' , width: 60, height: 60, fontSize: 30 }}
+          buttonStyle={{ backgroundColor: '#ffad33',  borderRadius: 50, alignSelf: 'center' , width: 60, height: 60, fontSize: 30 }}
         />
       }
     /> 
@@ -120,15 +123,16 @@ useEffect(() => {
         backgroundColor: '#ff6e40',
         marginTop: 10,
         borderRadius: 10,
-        padding: 15
+        padding: 15,
+        margin : 20,
       }}/>
-   
+    </ImageBackground>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff3e0', padding: 10 },
+  container: { flex: 1, backgroundColor: '#fff3e0',  },
   header: { textAlign: 'center', fontFamily: 'Quicksand_700Bold', margin: 20, color: '#4F000B', fontSize: 24 },
   content: { fontFamily: 'Quicksand_700Bold', fontSize: 18, color: '#4F000B' },
   text: { fontFamily: 'Quicksand_400Regular', color: '#4F000B' },

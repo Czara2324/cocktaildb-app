@@ -2,7 +2,6 @@ import { StyleSheet, View, ImageBackground } from 'react-native';
 
 import { Text, Button } from '@rneui/themed';
 
-
 export default function WelcomeScreen({ navigation }) {
     return (
         <ImageBackground

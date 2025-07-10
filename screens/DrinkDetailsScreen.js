@@ -53,8 +53,6 @@ useEffect(() => {
 
   const isFav = isFavorite(cocktail.idDrink || cocktail.id);
 
-  console.log('Rendering cocktail details for:', cocktail);
-
   return (
     <ImageBackground
       source={require('../assets/home-bg.jpg')} 

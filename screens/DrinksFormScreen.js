@@ -4,7 +4,7 @@
 // It uses React Hook Form for form management and AsyncStorage for persistence.
 // It also fetches categories and glass types from the Cocktail DB API.
 import { useEffect, useState } from 'react';
-import { View, StyleSheet, Alert, ScrollView, Image } from 'react-native';
+import { View, StyleSheet, Alert, ScrollView, Image, ImageBackground } from 'react-native';
 import { Button, Text, Input, Divider, Icon } from '@rneui/themed';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { Picker } from '@react-native-picker/picker';
@@ -14,7 +14,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const alcoholOptions = ['Alcoholic', 'Non alcoholic'];
 
 export default function DrinksFormScreen({ route, navigation }) {
-  const editDrink = route.params?.drink;
   const [categories, setCategories] = useState([]);
   const [glasses, setGlasses] = useState([]);
   const [imageUri, setImageUri] = useState(null);
@@ -55,7 +54,7 @@ export default function DrinksFormScreen({ route, navigation }) {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.7,
@@ -79,7 +78,7 @@ export default function DrinksFormScreen({ route, navigation }) {
     .catch(err => console.error('Error fetching glass types:', err));
 }, []);
 
-  const onSubmit = async (data) => {
+const onSubmit = async (data) => {
   if (data.ingredients.filter(i => i.trim() !== '').length === 0) {
     Alert.alert('Validation', 'Please add at least one ingredient.');
     return;
@@ -92,10 +91,11 @@ export default function DrinksFormScreen({ route, navigation }) {
 
   try {
     const stored = await AsyncStorage.getItem('myDrinks');
-    const list = stored ? JSON.parse(stored) : [];
+    const storedDrinks = stored ? JSON.parse(stored) : [];
+
     const newDrink = { ...data, image: imageUri };
 
-    await AsyncStorage.setItem('myDrinks', JSON.stringify([...list, newDrink]));
+    await AsyncStorage.setItem('myDrinks', JSON.stringify([...storedDrinks, newDrink]));
     Alert.alert('Success', 'Drink saved successfully!');
     navigation.goBack();
   } catch (e) {
@@ -104,9 +104,10 @@ export default function DrinksFormScreen({ route, navigation }) {
   }
 };
 
-
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
+    
+      <View style={styles.form}>
       <Text style={styles.title}>Create a New Drink</Text>
       <Text style={styles.label}>Name</Text>
       <Controller
@@ -161,6 +162,7 @@ export default function DrinksFormScreen({ route, navigation }) {
 
       <Text style={styles.label}>Glass</Text>
       <Controller
+        
         control={control}
         name="glass"
         rules={{ required: 'Glass type is required' }}
@@ -254,14 +256,16 @@ export default function DrinksFormScreen({ route, navigation }) {
         onPress={handleSubmit(onSubmit)}
         buttonStyle={{ backgroundColor: '#CE4257', marginTop: 20, borderRadius: 10 ,padding: 15, marginBottom: 50}}
       />
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff3e0', padding: 20 },
-  title: { textAlign: 'center',fontFamily: 'Quicksand_700Bold', marginBottom: 20, color: '#4F000B', fontSize: 30 },
+  container: { backgroundColor: '#fff3e0'},
+  title: { textAlign: 'center',fontFamily: 'Quicksand_700Bold', margin: 10, color: '#4F000B', fontSize: 30 },
   label: { fontFamily: 'Quicksand_700Bold', color: '#4F000B', fontSize: 18 },
+  form: { padding: 20 },
   picker: {
     backgroundColor: '#ffe0b2',
     marginBottom: 5,
@@ -274,9 +278,10 @@ const styles = StyleSheet.create({
   },
   radioButton: {
     paddingHorizontal: 20,
-    borderColor: '#ffb74d',
+    borderColor: '#ffe0b2',
     borderWidth: 1,
     borderRadius: 10,
+
   },
   error: {
     color: 'red',
