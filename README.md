@@ -1,4 +1,4 @@
-# 🍹 Cocktail Companion App
+# 🍹 D'Bar Cocktail App
 
 A React Native app for discovering, saving, and creating custom cocktail recipes. Users can view drinks from an external API, favorite drinks, create their own using a form, and store them locally using AsyncStorage.
 
